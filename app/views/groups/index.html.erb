@@ -1,0 +1,62 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- Page Header -->
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">Groups</h1>
+        <p class="mt-1 text-sm text-gray-500">Manage your accountability groups</p>
+      </div>
+      <%= link_to 'New Group', new_group_path, class: "inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+    </div>
+
+    <!-- Groups Grid -->
+    <% if @groups.any? %>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <% @groups.each do |group| %>
+          <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="p-6">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h2 class="text-xl font-semibold text-gray-900"><%= group.name %></h2>
+                  <p class="mt-2 text-gray-600"><%= group.description %></p>
+                  
+                  <div class="mt-4 space-y-2">
+                    <div class="flex items-center text-sm text-gray-500">
+                      <svg class="h-5 w-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                      <span>Members: <%= group.members.count %></span>
+                    </div>
+                    <div class="flex items-center text-sm text-gray-500">
+                      <svg class="h-5 w-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.19 9.19 0 011.066-4.017 9.095 9.095 0 01.286-2.182A10.05 10.05 0 0112 2c4.477 0 8.268 2.943 9.543 7a9.19 9.19 0 011.066 4.017 9.095 9.095 0 01.286 2.182m-1.286 6.334-6 6" />
+                      </svg>
+                      <span><%= group.private ? 'Private' : 'Public' %></span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="flex space-x-2">
+                  <%= link_to 'View', group_path(group), class: "text-blue-600 hover:text-blue-800" %>
+                  <% if group.admin?(current_user) %>
+                    <%= link_to 'Edit', edit_group_path(group), class: "text-blue-600 hover:text-blue-800" %>
+                    <%= link_to 'Delete', group_path(group), method: :delete, data: { confirm: 'Are you sure?' }, class: "text-red-600 hover:text-red-800" %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="bg-white rounded-lg shadow p-8 text-center">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">No groups found</h3>
+        <p class="mt-1 text-sm text-gray-500">Get started by creating a new group.</p>
+        <%= link_to 'Create a Group', new_group_path, class: "mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+      </div>
+    <% end %>
+  </div>
+</div>

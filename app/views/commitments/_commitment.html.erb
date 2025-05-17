@@ -1,0 +1,51 @@
+<div class="bg-white rounded-lg shadow-lg overflow-hidden">
+  <div class="p-6">
+    <div class="flex justify-between items-start">
+      <div>
+        <h2 class="text-xl font-semibold text-gray-900"><%= commitment.title %></h2>
+        <p class="mt-2 text-gray-600"><%= commitment.description %></p>
+        
+        <div class="mt-4 space-y-2">
+          <div class="flex items-center text-sm text-gray-500">
+            <svg class="h-5 w-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 11-16 0 3 3 0 0116 0z" />
+            </svg>
+            <span>Category: <%= commitment.category.name %></span>
+          </div>
+          <div class="flex items-center text-sm text-gray-500">
+            <svg class="h-5 w-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 7V3m0 4l-3 3m3-3l3 3m-3 3v12m-3-12h12m-12 4h12m0 0l3-3m-3 3l-3-3m3 3H3m4 0h14m-4 4h8m-4 4h8m-4 4h8m-4 4h8" />
+            </svg>
+            <span>Frequency: <%= commitment.frequency.humanize %></span>
+          </div>
+          <div class="flex items-center text-sm text-gray-500">
+            <svg class="h-5 w-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span>Start Date: <%= commitment.start_date.strftime('%b %d, %Y') %></span>
+          </div>
+          <% if commitment.end_date %>
+            <div class="flex items-center text-sm text-gray-500">
+              <svg class="h-5 w-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span>End Date: <%= commitment.end_date.strftime('%b %d, %Y') %></span>
+            </div>
+          <% end %>
+          <div class="flex items-center text-sm text-gray-500">
+            <svg class="h-5 w-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>Status: <%= commitment.completed ? 'Completed' : 'Active' %></span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="flex space-x-2">
+        <%= link_to 'View', commitment_path(commitment), class: "text-blue-600 hover:text-blue-800" %>
+        <%= link_to 'Edit', edit_commitment_path(commitment), class: "text-blue-600 hover:text-blue-800" %>
+        <%= link_to 'Delete', commitment_path(commitment), method: :delete, data: { confirm: 'Are you sure?' }, class: "text-red-600 hover:text-red-800" %>
+      </div>
+    </div>
+  </div>
+</div>

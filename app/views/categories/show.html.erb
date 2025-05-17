@@ -1,0 +1,59 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-4xl mx-auto">
+    <!-- Category Header -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+      <div class="flex justify-between items-center mb-4">
+        <h1 class="text-2xl font-bold"><%= @category.name %></h1>
+        <div class="flex space-x-2">
+          <%= link_to 'Edit', edit_category_path(@category), class: "text-blue-600 hover:text-blue-800" %>
+          <%= link_to 'Delete', @category, method: :delete, data: { confirm: 'Are you sure?' }, class: "text-red-600 hover:text-red-800" %>
+        </div>
+      </div>
+      <p class="text-gray-600"><%= @category.description %></p>
+    </div>
+
+    <!-- Commitments Section -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+      <h2 class="text-xl font-semibold mb-4">Commitments</h2>
+      <%= link_to 'New Commitment', new_category_commitment_path(@category), class: "text-blue-600 hover:text-blue-800 mb-4 inline-block" %>
+      
+      <% if @commitments.any? %>
+        <div class="space-y-4">
+          <% @commitments.each do |commitment| %>
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded">
+              <div>
+                <h3 class="font-medium"><%= commitment.title %></h3>
+                <div class="flex items-center space-x-2 text-sm text-gray-500">
+                  <span><%= commitment.frequency.humanize %> commitment</span>
+                  <span><%= commitment.start_date.strftime('%b %d, %Y') %></span>
+                </div>
+              </div>
+              <div class="flex space-x-2">
+                <%= link_to 'View', commitment_path(commitment), class: "text-blue-600 hover:text-blue-800" %>
+                <%= link_to 'Edit', edit_commitment_path(commitment), class: "text-blue-600 hover:text-blue-800" %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-500">No commitments yet.</p>
+      <% end %>
+    </div>
+
+    <!-- Comments Section -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-xl font-semibold mb-4">Comments</h2>
+      <%= render 'comments/form', commentable: @category %>
+      
+      <% if @comments.any? %>
+        <div class="space-y-4">
+          <% @comments.each do |comment| %>
+            <%= render 'comments/comment', comment: comment %>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-500">No comments yet.</p>
+      <% end %>
+    </div>
+  </div>
+</div>

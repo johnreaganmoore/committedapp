@@ -1,0 +1,65 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-4xl mx-auto">
+    <!-- Group Header -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+      <div class="flex justify-between items-center mb-4">
+        <h1 class="text-2xl font-bold"><%= @group.name %></h1>
+        <% if current_user.admin?(@group) %>
+          <div class="flex space-x-2">
+            <%= link_to 'Edit', edit_group_path(@group), class: "text-blue-600 hover:text-blue-800" %>
+            <%= link_to 'Delete', @group, method: :delete, data: { confirm: 'Are you sure?' }, class: "text-red-600 hover:text-red-800" %>
+          </div>
+        <% end %>
+      </div>
+      <p class="text-gray-600"><%= @group.description %></p>
+      <div class="mt-4">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+          <%= @group.private ? 'Private' : 'Public' %>
+        </span>
+      </div>
+    </div>
+
+    <!-- Members Section -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+      <h2 class="text-xl font-semibold mb-4">Members</h2>
+      <div class="space-y-4">
+        <% @members.each do |member| %>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 rounded-full bg-gray-200"></div>
+              <div>
+                <h3 class="font-medium"><%= member.name %></h3>
+                <p class="text-sm text-gray-500"><%= member.email %></p>
+              </div>
+            </div>
+            <% if current_user.admin?(@group) %>
+              <div>
+                <% if member.admin?(@group) %>
+                  <span class="text-sm font-medium text-blue-600">Admin</span>
+                <% else %>
+                  <%= link_to 'Make Admin', make_admin_group_membership_path(member.group_memberships.find_by(group: @group)), method: :patch, class: "text-sm text-blue-600 hover:text-blue-800" %>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Comments Section -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-xl font-semibold mb-4">Comments</h2>
+      <%= render 'comments/form', commentable: @group %>
+      
+      <% if @comments.any? %>
+        <div class="space-y-4">
+          <% @comments.each do |comment| %>
+            <%= render 'comments/comment', comment: comment %>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-500">No comments yet.</p>
+      <% end %>
+    </div>
+  </div>
+</div>

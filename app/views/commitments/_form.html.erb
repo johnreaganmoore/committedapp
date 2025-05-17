@@ -1,0 +1,64 @@
+<%= render 'shared/form', resource: @commitment, cancel_path: commitments_path do |f| %>
+  <div class="space-y-4">
+    <div>
+      <%= f.label :title, class: "block text-sm font-medium text-gray-700" %>
+      <div class="mt-1">
+        <%= f.text_field :title, class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
+      </div>
+    </div>
+
+    <div>
+      <%= f.label :description, class: "block text-sm font-medium text-gray-700" %>
+      <div class="mt-1">
+        <%= f.text_area :description, rows: 4, class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
+      </div>
+    </div>
+
+    <div>
+      <%= f.label :category_id, 'Category', class: "block text-sm font-medium text-gray-700" %>
+      <div class="mt-1">
+        <%= f.collection_select :category_id, @categories, :id, :name, {}, class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
+      </div>
+    </div>
+
+    <div>
+      <%= f.label :milestones, class: "block text-sm font-medium text-gray-700" %>
+      <div class="mt-1">
+        <%= f.collection_check_boxes :milestone_ids, @milestones, :id, :title do |b| %>
+          <div class="flex items-center space-x-2">
+            <%= b.check_box class: "rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
+            <%= b.label class: "text-sm text-gray-700" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div>
+      <%= f.label :frequency, class: "block text-sm font-medium text-gray-700" %>
+      <div class="mt-1">
+        <%= f.select :frequency, Commitment.frequencies.keys.map { |f| [f.humanize, f] }, {}, class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
+      </div>
+    </div>
+
+    <div>
+      <%= f.label :start_date, class: "block text-sm font-medium text-gray-700" %>
+      <div class="mt-1">
+        <%= f.date_field :start_date, class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
+      </div>
+    </div>
+
+    <div>
+      <%= f.label :end_date, class: "block text-sm font-medium text-gray-700" %>
+      <div class="mt-1">
+        <%= f.date_field :end_date, class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
+      </div>
+    </div>
+
+    <div>
+      <%= f.label :completed, class: "block text-sm font-medium text-gray-700" %>
+      <div class="mt-1">
+        <%= f.check_box :completed, class: "rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
+      </div>
+    </div>
+  </div>
+<% end %>

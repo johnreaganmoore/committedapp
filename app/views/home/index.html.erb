@@ -1,0 +1,70 @@
+<% if user_signed_in? %>
+  <div class="container mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- Categories Section -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-semibold mb-4">Your Categories</h2>
+        <% if @categories.any? %>
+          <ul class="space-y-4">
+            <% @categories.each do |category| %>
+              <li class="flex items-center justify-between">
+                <span><%= category.name %></span>
+                <span class="text-sm text-gray-600"><%= category.commitments.count %> commitments</span>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="text-gray-600">No categories yet. Create your first category!</p>
+        <% end %>
+      </div>
+
+      <!-- Groups Section -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-semibold mb-4">Your Groups</h2>
+        <% if @groups.any? %>
+          <ul class="space-y-4">
+            <% @groups.each do |group| %>
+              <li class="flex items-center justify-between">
+                <span><%= group.name %></span>
+                <span class="text-sm text-gray-600"><%= group.users.count %> members</span>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="text-gray-600">No groups yet. Join or create a group!</p>
+        <% end %>
+      </div>
+
+      <!-- Upcoming Commitments Section -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-semibold mb-4">Upcoming Commitments</h2>
+        <% if @upcoming_commitments.any? %>
+          <ul class="space-y-4">
+            <% @upcoming_commitments.each do |commitment| %>
+              <li class="flex items-center justify-between">
+                <span><%= commitment.title %></span>
+                <span class="text-sm text-gray-600"><%= commitment.start_date.to_s(:short) %></span>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="text-gray-600">No upcoming commitments. Add some commitments!</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% else %>
+  <div class="min-h-screen flex items-center justify-center bg-gray-50">
+    <div class="max-w-md w-full space-y-8">
+      <div>
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          Welcome to Accountability App
+        </h2>
+        <p class="mt-2 text-center text-sm text-gray-600">
+          Sign in to start tracking your commitments and join accountability groups
+        </p>
+      </div>
+      <%= link_to "Sign in", new_user_session_path, class: "group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+    </div>
+  </div>
+<% end %>

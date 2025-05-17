@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Accountability</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "tailwindcss", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="min-h-screen bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <div class="flex">
+            <%= link_to root_path, class: "flex items-center" do %>
+              <span class="text-xl font-bold text-gray-900">Accountability</span>
+            <% end %>
+          </div>
+
+          <div class="flex items-center space-x-4">
+            <% if user_signed_in? %>
+              <div class="flex items-center space-x-2">
+                <%= link_to 'Categories', categories_path, class: "text-gray-700 hover:text-gray-900" %>
+                <%= link_to 'Milestones', milestones_path, class: "text-gray-700 hover:text-gray-900" %>
+                <%= link_to 'Commitments', commitments_path, class: "text-gray-700 hover:text-gray-900" %>
+                <%= link_to 'Groups', groups_path, class: "text-gray-700 hover:text-gray-900" %>
+              </div>
+              <div class="flex items-center space-x-2">
+                <%= link_to 'Profile', edit_user_registration_path, class: "text-gray-700 hover:text-gray-900" %>
+                <%= link_to 'Sign out', destroy_user_session_path, method: :delete, class: "text-gray-700 hover:text-gray-900" %>
+              </div>
+            <% else %>
+              <div class="flex items-center space-x-2">
+                <%= link_to 'Sign in', new_user_session_path, class: "text-gray-700 hover:text-gray-900" %>
+                <%= link_to 'Sign up', new_user_registration_path, class: "text-gray-700 hover:text-gray-900" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <%= render 'shared/flashes' if flash.any? %>
+      <%= yield %>
+    </main>
+  </body>
+</html>

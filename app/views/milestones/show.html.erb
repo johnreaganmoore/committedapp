@@ -1,0 +1,64 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-4xl mx-auto">
+    <!-- Milestone Header -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+      <div class="flex justify-between items-center mb-4">
+        <h1 class="text-2xl font-bold"><%= @milestone.title %></h1>
+        <div class="flex space-x-2">
+          <%= link_to 'Edit', edit_milestone_path(@milestone), class: "text-blue-600 hover:text-blue-800" %>
+          <%= link_to 'Delete', @milestone, method: :delete, data: { confirm: 'Are you sure?' }, class: "text-red-600 hover:text-red-800" %>
+        </div>
+      </div>
+      <p class="text-gray-600 mb-4"><%= @milestone.description %></p>
+      <div class="flex items-center space-x-4 text-sm">
+        <span class="text-gray-500"><%= @milestone.target_date.strftime('%b %d, %Y') %></span>
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+          <%= @milestone.status.humanize %>
+        </span>
+      </div>
+    </div>
+
+    <!-- Commitments Section -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+      <h2 class="text-xl font-semibold mb-4">Contributing Commitments</h2>
+      
+      <% if @commitments.any? %>
+        <div class="space-y-4">
+          <% @commitments.each do |commitment| %>
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded">
+              <div>
+                <h3 class="font-medium"><%= commitment.title %></h3>
+                <div class="flex items-center space-x-2 text-sm text-gray-500">
+                  <span><%= commitment.category.name %></span>
+                  <span><%= commitment.frequency.humanize %> commitment</span>
+                </div>
+              </div>
+              <div class="flex space-x-2">
+                <%= link_to 'View', commitment_path(commitment), class: "text-blue-600 hover:text-blue-800" %>
+                <%= link_to 'Edit', edit_commitment_path(commitment), class: "text-blue-600 hover:text-blue-800" %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-500">No commitments are contributing to this milestone yet.</p>
+      <% end %>
+    </div>
+
+    <!-- Comments Section -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-xl font-semibold mb-4">Comments</h2>
+      <%= render 'comments/form', commentable: @milestone %>
+      
+      <% if @comments.any? %>
+        <div class="space-y-4">
+          <% @comments.each do |comment| %>
+            <%= render 'comments/comment', comment: comment %>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-500">No comments yet.</p>
+      <% end %>
+    </div>
+  </div>
+</div>
