@@ -3,8 +3,8 @@ class CommitmentsController < ApplicationController
   before_action :set_commitment, only: [:show, :edit, :update, :destroy]
 
   def index
-    # Get all commitments for the current user
-    @commitments = current_user.commitments.includes(:completions)
+    @commitments = current_user.commitments.includes(:category)
+    @categories = current_user.categories.order(:position)
     
     # Group commitments by frequency for the view
     @grouped_commitments = {
@@ -57,9 +57,15 @@ class CommitmentsController < ApplicationController
 
   def update
     if @commitment.update(commitment_params)
-      redirect_to @commitment, notice: 'Commitment was successfully updated.'
+      respond_to do |format|
+        format.html { redirect_to commitments_path, notice: 'Commitment was successfully updated.' }
+        format.json { render json: { success: true, completed: @commitment.completed } }
+      end
     else
-      render :edit
+      respond_to do |format|
+        format.html { render :edit }
+        format.json { render json: { success: false }, status: :unprocessable_entity }
+      end
     end
   end
 
