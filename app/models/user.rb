@@ -20,6 +20,24 @@ class User < ApplicationRecord
   # Format phone number before saving
   before_save :format_phone_number
 
+  # Acts as list configuration
+  acts_as_list scope: nil
+  
+  # Override acts_as_list methods to handle nil user_id
+  def bottom_position_in_list
+    self.class.maximum(:position) || 0
+  end
+  
+  def bottom_item
+    self.class.order(position: :desc).first
+  end
+
+  private
+
+  def format_phone_number
+    self.phone = phone.to_s.gsub(/[^0-9]/, '') if phone.present?
+  end
+
   private
 
   def format_phone_number

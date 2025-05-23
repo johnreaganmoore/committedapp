@@ -1,7 +1,27 @@
 Rails.application.routes.draw do
-  get 'home/index'
-  devise_for :users
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+
+  # Landing page for non-signed-in users
+  get 'landing/index'
+  root 'landing#index'
+
+  # Authenticated routes
+  devise_for :users, controllers: {
+    registrations: 'users/registrations'
+  }
+  resources :groups
+  resources :categories
+  resources :milestones
+  resources :commitments do
+    resources :comments, only: [:create, :destroy]
+    resources :completions, only: [:create, :update, :destroy], controller: 'completions'
+    
+    member do
+      post :complete
+      post :skip
+    end
+  end
+  get 'home/index'
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.

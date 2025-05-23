@@ -1,0 +1,36 @@
+Arguments: 
+  /Users/johnreaganmoore/.nvm/versions/node/v16.13.0/bin/node /Users/johnreaganmoore/.nvm/versions/node/v16.13.0/bin/yarn add stimulus-reflex
+
+PATH: 
+  /Users/johnreaganmoore/.codeium/windsurf/bin:/Users/johnreaganmoore/.rbenv/shims:/opt/homebrew/opt/ruby/bin:/Users/johnreaganmoore/.asdf/shims:/opt/homebrew/opt/asdf/libexec/bin:/Users/johnreaganmoore/.nvm/versions/node/v16.13.0/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Library/Apple/usr/bin:/Users/johnreaganmoore/.codeium/windsurf/bin:/Users/johnreaganmoore/.rbenv/shims:/opt/homebrew/opt/ruby/bin:/Users/johnreaganmoore/.nvm/versions/node/v16.13.0/bin:/opt/homebrew/bin:/opt/homebrew/sbin
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  16.13.0
+
+Platform: 
+  darwin arm64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/stimulus-reflex: Not found
+      at Request.params.callback [as _callback] (/Users/johnreaganmoore/.nvm/versions/node/v16.13.0/lib/node_modules/yarn/lib/cli.js:66145:18)
+      at Request.self.callback (/Users/johnreaganmoore/.nvm/versions/node/v16.13.0/lib/node_modules/yarn/lib/cli.js:140890:22)
+      at Request.emit (node:events:390:28)
+      at Request.<anonymous> (/Users/johnreaganmoore/.nvm/versions/node/v16.13.0/lib/node_modules/yarn/lib/cli.js:141862:10)
+      at Request.emit (node:events:390:28)
+      at IncomingMessage.<anonymous> (/Users/johnreaganmoore/.nvm/versions/node/v16.13.0/lib/node_modules/yarn/lib/cli.js:141784:12)
+      at Object.onceWrapper (node:events:509:28)
+      at IncomingMessage.emit (node:events:402:35)
+      at endReadableNT (node:internal/streams/readable:1343:12)
+      at processTicksAndRejections (node:internal/process/task_queues:83:21)
+
+npm manifest: 
+  No manifest
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

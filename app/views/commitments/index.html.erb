@@ -9,37 +9,123 @@
       <%= link_to 'New Commitment', new_commitment_path, class: "inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
     </div>
 
-    <!-- Active Commitments -->
-    <% if @commitments.active.any? %>
-      <div class="mb-8">
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">Active Commitments</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <% @commitments.active.each do |commitment| %>
-            <%= render 'commitment', commitment: commitment %>
-          <% end %>
+    <% if @commitments.any? %>
+      <!-- Daily Commitments -->
+      <% if @grouped_commitments && @grouped_commitments['daily']&.any? %>
+        <div class="mb-8">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">Daily</h2>
+          <div class="space-y-4">
+            <% @grouped_commitments['daily'].each do |commitment| %>
+              <%= render 'commitment_card', commitment: commitment %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    
+    <!-- Stats Section -->
+    <div class="bg-white shadow rounded-lg mb-8 overflow-hidden">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Your Progress</h3>
+        <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
+          <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 bg-indigo-500 rounded-md p-3">
+                  <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt class="text-sm font-medium text-gray-500 truncate">Completed</dt>
+                    <dd class="flex items-baseline">
+                      <div class="text-2xl font-semibold text-gray-900">
+                        <%= @commitments.completed.count %>
+                      </div>
+                      <div class="ml-2 flex items-baseline text-sm font-semibold text-green-600">
+                        <span class="sr-only">Completed commitments</span>
+                      </div>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 bg-yellow-500 rounded-md p-3">
+                  <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt class="text-sm font-medium text-gray-500 truncate">In Progress</dt>
+                    <dd class="flex items-baseline">
+                      <div class="text-2xl font-semibold text-gray-900">
+                        <%= @commitments.incomplete.count %>
+                      </div>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 bg-green-500 rounded-md p-3">
+                  <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt class="text-sm font-medium text-gray-500 truncate">Best Streak</dt>
+                    <dd class="flex items-baseline">
+                      <div class="text-2xl font-semibold text-gray-900">
+                        <%= @commitments.maximum(:current_streak) || 0 %>
+                      </div>
+                      <div class="ml-2 flex items-baseline text-sm font-semibold text-green-600">
+                        <span class="sr-only">Best streak</span>
+                      </div>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    <% end %>
+    </div>
 
-    <!-- Completed Commitments -->
-    <% if @commitments.completed.any? %>
-      <div>
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">Completed Commitments</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <% @commitments.completed.each do |commitment| %>
-            <%= render 'commitment', commitment: commitment %>
-          <% end %>
+    <!-- Commitments List -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+      <% if @commitments.any? %>
+        <div class="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 p-6">
+          <%= render @commitments %>
         </div>
-      </div>
-    <% else %>
-      <div class="bg-white rounded-lg shadow p-8 text-center">
-        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <h3 class="mt-2 text-sm font-medium text-gray-900">No commitments found</h3>
-        <p class="mt-1 text-sm text-gray-500">Start by creating your first commitment.</p>
-        <%= link_to 'Create a Commitment', new_commitment_path, class: "mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
-      </div>
-    <% end %>
+      <% else %>
+        <div class="text-center py-12">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">No commitments yet</h3>
+          <p class="mt-1 text-sm text-gray-500">Get started by creating a new commitment.</p>
+          <div class="mt-6">
+            <%= link_to new_commitment_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" do %>
+              <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+              </svg>
+              New Commitment
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <% end %> <!-- Close the if @commitments.any? block -->
   </div>
 </div>

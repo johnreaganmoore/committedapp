@@ -12,8 +12,13 @@
       <p class="text-gray-600 mb-4"><%= @commitment.description %></p>
       <div class="flex items-center space-x-4 text-sm">
         <span class="text-gray-500"><%= @commitment.category.name %></span>
-        <span class="text-gray-500"><%= @commitment.frequency.humanize %> commitment</span>
-        <span class="text-gray-500"><%= @commitment.start_date.strftime('%b %d, %Y') %></span>
+        <span class="text-gray-500"><%= @commitment.frequency_i18n %> commitment</span>
+        <% if @commitment.start_date.present? %>
+          <span class="text-gray-500"><%= @commitment.start_date.strftime('%b %d, %Y') %></span>
+        <% end %>
+        <% if @commitment.end_date.present? %>
+          <span class="text-gray-500"><%= @commitment.end_date.strftime('%b %d, %Y') %></span>
+        <% end %>
         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
           <%= @commitment.completed ? 'Completed' : 'Active' %>
         </span>

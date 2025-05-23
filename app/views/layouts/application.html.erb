@@ -6,7 +6,8 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= stylesheet_link_tag "tailwindcss", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
@@ -49,5 +50,12 @@
       <%= render 'shared/flashes' if flash.any? %>
       <%= yield %>
     </main>
+
+    <!-- Footer -->
+    <footer class="mt-12 border-t border-gray-200 py-8">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <p class="text-center text-gray-500 text-sm">&copy; 2025 Accountability App. All rights reserved.</p>
+      </div>
+    </footer>
   </body>
 </html>

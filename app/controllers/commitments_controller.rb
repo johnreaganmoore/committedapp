@@ -3,7 +3,23 @@ class CommitmentsController < ApplicationController
   before_action :set_commitment, only: [:show, :edit, :update, :destroy]
 
   def index
-    @commitments = current_user.commitments.includes(:category, :milestones)
+    # Get all commitments for the current user
+    @commitments = current_user.commitments.includes(:completions)
+    
+    # Group commitments by frequency for the view
+    @grouped_commitments = {
+      'daily' => @commitments.where(frequency: 'daily').order(created_at: :desc),
+      'weekly' => @commitments.where(frequency: 'weekly').order(created_at: :desc),
+      'monthly' => @commitments.where(frequency: 'monthly').order(created_at: :desc)
+    }
+    
+    # Calculate stats for the dashboard
+    @stats = {
+      total_commitments: @commitments.count,
+      completed_commitments: @commitments.completed.count,
+      incomplete_commitments: @commitments.incomplete.count,
+      best_streak: @commitments.maximum(:current_streak) || 0
+    }
   end
 
   def show
@@ -24,10 +40,18 @@ class CommitmentsController < ApplicationController
 
   def create
     @commitment = current_user.commitments.build(commitment_params)
+    @categories = current_user.categories.order(:position)
+    @milestones = current_user.milestones.order(:position)
     if @commitment.save
-      redirect_to @commitment, notice: 'Commitment was successfully created.'
+      respond_to do |format|
+        format.html { redirect_to @commitment, notice: 'Commitment was successfully created.' }
+        format.json { render json: { status: 'success', message: 'Commitment created successfully' } }
+      end
     else
-      render :new
+      respond_to do |format|
+        format.html { render :new }
+        format.json { render json: { status: 'error', errors: @commitment.errors.full_messages }, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -43,11 +67,71 @@ class CommitmentsController < ApplicationController
     @commitment.destroy
     redirect_to commitments_path, notice: 'Commitment was successfully destroyed.'
   end
+  
+  def complete
+    @commitment = current_user.commitments.find(params[:id])
+    
+    if @commitment.complete_current_period!
+      respond_to do |format|
+        format.html { redirect_to commitments_path, notice: 'Commitment marked as complete! 🎉' }
+        format.json { 
+          render json: { 
+            status: 'success', 
+            html: render_to_string(partial: 'commitments/commitment_card', locals: { commitment: @commitment }),
+            completion: @commitment.current_period_completion.as_json(only: [:id, :status, :completed_at])
+          } 
+        }
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to commitments_path, alert: 'Failed to mark commitment as complete.' }
+        format.json { 
+          render json: { 
+            status: 'error', 
+            errors: @commitment.errors.full_messages 
+          }, 
+          status: :unprocessable_entity 
+        }
+      end
+    end
+  end
+  
+  def skip
+    @commitment = current_user.commitments.find(params[:id])
+    
+    if @commitment.skip_current_period!
+      respond_to do |format|
+        format.html { redirect_to commitments_path, notice: 'Commitment skipped for this period.' }
+        format.json { 
+          render json: { 
+            status: 'success',
+            html: render_to_string(partial: 'commitments/commitment_card', locals: { commitment: @commitment }),
+            completion: @commitment.current_period_completion.as_json(only: [:id, :status, :completed_at])
+          }
+        }
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to commitments_path, alert: 'Failed to skip commitment.' }
+        format.json { 
+          render json: { 
+            status: 'error', 
+            errors: @commitment.errors.full_messages 
+          }, 
+          status: :unprocessable_entity 
+        }
+      end
+    end
+  end
 
   private
 
   def set_commitment
-    @commitment = current_user.commitments.find(params[:id])
+    @commitment = if params[:commitment_id]
+                  current_user.commitments.find(params[:commitment_id])
+                else
+                  current_user.commitments.find(params[:id])
+                end
   end
 
   def commitment_params
@@ -58,6 +142,7 @@ class CommitmentsController < ApplicationController
       :frequency,
       :start_date,
       :end_date,
+      :user_id,
       :completed,
       milestone_ids: []
     )

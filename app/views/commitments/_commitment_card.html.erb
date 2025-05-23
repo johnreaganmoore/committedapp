@@ -1,0 +1,51 @@
+<%# This partial renders a single commitment as a simple todo item %>
+<div class="group flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors duration-150"
+     data-controller="commitment-actions"
+     data-commitment-actions-complete-url="<%= complete_commitment_path(commitment, format: :json) %>"
+     data-commitment-actions-skip-url="<%= skip_commitment_path(commitment, format: :json) %>">
+  
+  <!-- Checkbox and Title -->
+  <div class="flex items-center flex-1 min-w-0">
+    <% if commitment.current_period_completed? %>
+      <button type="button" 
+              class="flex-shrink-0 h-5 w-5 text-green-500 rounded-full border-2 border-green-500 flex items-center justify-center mr-3"
+              data-action="click->commitment-actions#complete">
+        <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    <% else %>
+      <button type="button" 
+              class="flex-shrink-0 h-5 w-5 rounded-full border-2 border-gray-300 hover:border-blue-500 mr-3"
+              data-action="click->commitment-actions#complete">
+      </button>
+    <% end %>
+    
+    <div class="min-w-0">
+      <h3 class="text-base font-medium text-gray-900 truncate <%= 'line-through text-gray-400' if commitment.current_period_completed? %>">
+        <%= commitment.title %>
+      </h3>
+      <% if commitment.description.present? %>
+        <p class="text-sm text-gray-500 truncate">
+          <%= commitment.description %>
+        </p>
+      <% end %>
+      <% if commitment.frequency.present? %>
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+          <%= commitment.frequency.capitalize %>
+        </span>
+      <% end %>
+    </div>
+  </div>
+  
+  <!-- Edit Button -->
+  <div class="ml-2 flex-shrink-0">
+    <%= link_to edit_commitment_path(commitment), 
+                class: 'p-1 text-gray-400 hover:text-gray-500 focus:outline-none' do %>
+      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+      </svg>
+      <span class="sr-only">Edit</span>
+    <% end %>
+  </div>
+</div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_17_004705) do
+ActiveRecord::Schema[7.1].define(version: 2025_05_22_104831) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -58,7 +58,23 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_17_004705) do
     t.integer "position"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "category_id"
+    t.integer "current_streak"
+    t.integer "best_streak"
     t.index ["user_id"], name: "index_commitments_on_user_id"
+  end
+
+  create_table "completions", force: :cascade do |t|
+    t.bigint "commitment_id", null: false
+    t.datetime "completed_at"
+    t.date "due_date", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["commitment_id", "due_date"], name: "index_completions_on_commitment_and_due_date", unique: true
+    t.index ["commitment_id"], name: "index_completions_on_commitment_id"
+    t.index ["due_date"], name: "index_completions_on_due_date"
+    t.index ["status"], name: "index_completions_on_status"
   end
 
   create_table "group_memberships", force: :cascade do |t|
@@ -106,6 +122,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_17_004705) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "phone"
+    t.integer "position"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -115,6 +132,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_17_004705) do
   add_foreign_key "commitment_milestones", "commitments"
   add_foreign_key "commitment_milestones", "milestones"
   add_foreign_key "commitments", "users"
+  add_foreign_key "completions", "commitments"
   add_foreign_key "group_memberships", "groups"
   add_foreign_key "group_memberships", "users"
   add_foreign_key "groups", "users"

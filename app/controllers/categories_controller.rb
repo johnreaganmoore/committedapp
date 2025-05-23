@@ -19,11 +19,13 @@ class CategoriesController < ApplicationController
   end
 
   def create
+    Rails.logger.info "Category params: #{category_params.inspect}"
     @category = current_user.categories.build(category_params)
     if @category.save
-      redirect_to categories_path, notice: 'Category was successfully created.'
+      render json: @category, status: :created
     else
-      render :new
+      Rails.logger.error "Category validation errors: #{@category.errors.full_messages.inspect}"
+      render json: { errors: @category.errors.full_messages }, status: :unprocessable_entity
     end
   end
 

@@ -68,3 +68,126 @@
     </div>
   </div>
 <% end %>
+
+<!-- Commitment Modal -->
+<div data-controller="modal" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity hidden" data-modal-target="overlay" aria-hidden="true"></div>
+<div data-controller="modal" class="fixed inset-0 z-10 overflow-y-auto hidden" data-modal-target="content">
+  <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+    <div class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+      <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
+        <button type="button" class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" data-action="click->modal#close">
+          <span class="sr-only">Close</span>
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="sm:flex sm:items-start">
+        <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
+          <h3 class="text-lg font-medium leading-6 text-gray-900" id="modal-title">
+            New Commitment
+          </h3>
+          <div class="mt-2">
+            <%= form_for(@commitment, url: commitments_path, method: :post, data: {
+      action: "modal#handleFormSubmit"
+    }) do |f| %>
+  <%= f.hidden_field :user_id, value: current_user.id %>
+  <%= f.hidden_field :completed, value: false %>
+                <div class="space-y-4">
+                  <div>
+                    <%= f.label :title, class: "block text-sm font-medium text-gray-700" %>
+                    <div class="mt-1">
+                      <%= f.text_field :title, class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
+                    </div>
+                  </div>
+
+                  <div>
+                    <%= f.label :description, class: "block text-sm font-medium text-gray-700" %>
+                    <div class="mt-1">
+                      <%= f.text_area :description, rows: 4, class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
+                    </div>
+                  </div>
+
+                  <div>
+                    <%= f.label :category_id, 'Category', class: "block text-sm font-medium text-gray-700" %>
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                      <div class="mt-8">
+                        <!-- Alert Component -->
+                        <div class="alert alert-success hidden mb-4" data-controller="alert" 
+                             data-alert-type="success" data-alert-message="">
+                          <div class="alert-content">
+                            <div class="alert-text"></div>
+                          </div>
+                          <button type="button" class="alert-close" data-action="click->alert#close">
+                            <span class="sr-only">Close</span>
+                            <svg class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                          </button>
+                        </div>
+
+                        <div data-controller="inline-category">
+                          <select data-inline-category-target="select" class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <option value="">Select a category</option>
+                            <% @categories.each do |category| %>
+                              <option value="<%= category.id %>"><%= category.name %></option>
+                            <% end %>
+                          </select>
+                          <div data-inline-category-target="newCategory" class="hidden">
+                            <input type="text" 
+                                   data-inline-category-target="input" 
+                                   class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <button type="button" 
+                                    data-inline-category-target="button" 
+                                    data-action="click->inline-category#createCategory"
+                                    class="mt-2 inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                              Create Category
+                            </button>
+                          </div>
+                          <button type="button" 
+                                  data-inline-category-target="button" 
+                                  data-action="click->inline-category#toggleNewCategory"
+                                  class="mt-2 inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                            Add New Category
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <%= f.label :frequency, class: "block text-sm font-medium text-gray-700" %>
+                    <div class="mt-1">
+                      <%= f.select :frequency, Commitment.frequencies.keys.map { |f| [f.humanize, f] }, {}, class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
+                    </div>
+                  </div>
+
+                  <div>
+                    <%= f.label :start_date, class: "block text-sm font-medium text-gray-700" %>
+                    <div class="mt-1">
+                      <%= f.date_field :start_date, class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
+                    </div>
+                  </div>
+
+                  <div>
+                    <%= f.label :end_date, class: "block text-sm font-medium text-gray-700" %>
+                    <div class="mt-1">
+                      <%= f.date_field :end_date, class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                  <%= f.submit "Create Commitment", class: "inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" %>
+                  <button type="button" class="mt-3 inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:mt-0 sm:ml-3" data-action="click->modal#close">
+                    Cancel
+                  </button>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

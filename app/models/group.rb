@@ -13,6 +13,5 @@ class Group < ApplicationRecord
   # Include acts_as_list for ordering groups
   acts_as_list scope: :user_id
 
-  # Enum for role in group_memberships
-  enum role: { member: 0, admin: 1 }
+
 end
