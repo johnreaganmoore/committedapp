@@ -51,25 +51,52 @@ export default class extends Controller {
 
         // Create the new commitment element
         const frequency = formData.get("commitment[frequency]")
+        const categoryId = formData.get("commitment[category_id]")
         const column = document.querySelector(`[data-commitment-target="column"]:has([value="${frequency}"])`)
         
+        // Find the category section or create it if it doesn't exist
+        let categorySection = column.querySelector(`[data-category-id="${categoryId}"]`)
+        if (!categorySection) {
+          // Get the category name from the select element
+          const categorySelect = form.querySelector('select[name="commitment[category_id]"]')
+          const categoryName = categorySelect.options[categorySelect.selectedIndex].text
+          
+          // Create new category section
+          categorySection = document.createElement('div')
+          categorySection.className = 'space-y-3'
+          categorySection.dataset.categoryId = categoryId
+          
+          // Add category header
+          const categoryHeader = document.createElement('h4')
+          categoryHeader.className = 'text-sm font-medium text-gray-700 px-2'
+          categoryHeader.textContent = categoryName
+          categorySection.appendChild(categoryHeader)
+          
+          // Insert the new category section before the new commitment form
+          column.insertBefore(categorySection, this.element)
+        }
+        
         const newCommitment = document.createElement('div')
-        newCommitment.className = 'bg-white rounded-lg shadow p-4'
+        newCommitment.className = 'bg-white rounded-lg shadow p-4 pb-2'
         newCommitment.innerHTML = `
-          <div class="flex items-start space-x-3">
-            <form class="flex-shrink-0" data-controller="commitment">
-              <input type="hidden" name="commitment[title]" value="${formData.get("commitment[title]")}">
-              <input type="hidden" name="commitment[category_id]" value="${formData.get("commitment[category_id]")}">
-              <input type="hidden" name="commitment[frequency]" value="${frequency}">
-              <input type="hidden" name="commitment[completed]" value="false">
-              <input type="checkbox" 
-                     name="commitment[completed]" 
-                     class="h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                     data-action="change->commitment#toggle"
-                     data-commitment-target="checkbox">
-            </form>
-            <div class="flex-grow">
-              <h4 class="text-sm font-medium text-gray-900">${formData.get("commitment[title]")}</h4>
+          <div class="flex justify-between space-x-3">
+            <div class="flex items-start space-x-3">
+              <form class="flex-shrink-0" data-controller="commitment">
+                <input type="hidden" name="commitment[title]" value="${formData.get("commitment[title]")}">
+                <input type="hidden" name="commitment[description]" value="${formData.get("commitment[description]") || ''}">
+                <input type="hidden" name="commitment[category_id]" value="${categoryId}">
+                <input type="hidden" name="commitment[frequency]" value="${frequency}">
+                <input type="hidden" name="commitment[completed]" value="false">
+                <input type="checkbox" 
+                       name="commitment[completed]" 
+                       class="h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                       data-action="change->commitment#toggle"
+                       data-commitment-target="checkbox">
+              </form>
+              <div class="flex-grow">
+                <h4 class="text-sm font-medium text-gray-900">${formData.get("commitment[title]")}</h4>
+                ${formData.get("commitment[description]") ? `<p class="text-xs text-gray-500 mt-1">${formData.get("commitment[description]")}</p>` : ''}
+              </div>
             </div>
             <a href="/commitments/${data.id}/edit" class="flex-shrink-0 text-gray-400 hover:text-gray-500">
               <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -79,8 +106,8 @@ export default class extends Controller {
           </div>
         `
         
-        // Insert the new commitment at the bottom of the column
-        column.insertBefore(newCommitment, this.element)
+        // Insert the new commitment at the end of the category section
+        categorySection.appendChild(newCommitment)
         
         // Update the count
         const countElement = column.closest('.bg-gray-100').querySelector('[data-commitment-target="count"]')

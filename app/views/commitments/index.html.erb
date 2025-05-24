@@ -1,5 +1,7 @@
 <div class="container mx-auto px-4 py-8">
   <div class="max-w-7xl mx-auto">
+    <%= render "celebration_modal" %>
+    
     <!-- Page Header -->
     <div class="mb-6">
       <h1 class="text-3xl font-bold text-gray-900">Commitments</h1>
@@ -9,7 +11,7 @@
     <!-- Trello Board Layout -->
     <div class="flex space-x-4 overflow-x-auto pb-4">
       <% Commitment.frequencies.keys.each do |frequency| %>
-        <div class="flex-shrink-0 w-80">
+        <div class="flex-shrink-0 w-80" data-frequency="<%= frequency %>">
           <div class="bg-gray-100 rounded-lg p-4">
             <h3 class="text-lg font-semibold text-gray-900 mb-4 capitalize">
               <%= frequency %>
@@ -17,36 +19,41 @@
                 (<%= @commitments.where(frequency: frequency).completed.count %>/<%= @commitments.where(frequency: frequency).count %>)
               </span>
             </h3>
-            <div class="space-y-3" data-commitment-target="column">
-              <% @commitments.where(frequency: frequency).each do |commitment| %>
-                <div class="bg-white rounded-lg shadow p-4 pb-2">
-                  <div class="flex justify-between space-x-3">
-                    <div class="flex items-start space-x-3">
-                      <%= form_with(model: commitment, local: false, class: "flex-shrink-0", data: { controller: "commitment" }) do |f| %>
-                        <%= f.hidden_field :title, value: commitment.title %>
-                        <%= f.hidden_field :description, value: commitment.description %>
-                        <%= f.hidden_field :category_id, value: commitment.category_id %>
-                        <%= f.hidden_field :frequency, value: commitment.frequency %>
-                        <%= f.hidden_field :start_date, value: commitment.start_date %>
-                        <%= f.hidden_field :end_date, value: commitment.end_date %>
-                        <%= f.check_box :completed, 
-                            class: "h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500",
-                            data: { 
-                              action: "change->commitment#toggle",
-                              commitment_target: "checkbox"
-                            } %>
-                      <% end %>
-                      <div class="flex-grow">
-                        <h4 class="text-sm font-medium text-gray-900"><%= commitment.title %></h4>
-                        <p class="text-xs text-gray-500 mt-1"><%= commitment.description %></p>
+            <div class="space-y-6" data-commitment-target="column">
+              <% @grouped_commitments[frequency].each do |category, commitments| %>
+                <div class="space-y-3" data-category-id="<%= category.id %>">
+                  <h4 class="text-sm font-medium text-gray-700 px-2"><%= category.name %></h4>
+                  <% commitments.each do |commitment| %>
+                    <div class="bg-white rounded-lg shadow p-4 pb-2" data-commitment-frequency="<%= commitment.frequency %>">
+                      <div class="flex justify-between space-x-3">
+                        <div class="flex items-start space-x-3">
+                          <%= form_with(model: commitment, local: false, class: "flex-shrink-0", data: { controller: "commitment" }) do |f| %>
+                            <%= f.hidden_field :title, value: commitment.title %>
+                            <%= f.hidden_field :description, value: commitment.description %>
+                            <%= f.hidden_field :category_id, value: commitment.category_id %>
+                            <%= f.hidden_field :frequency, value: commitment.frequency, required: true %>
+                            <%= f.hidden_field :start_date, value: commitment.start_date %>
+                            <%= f.hidden_field :end_date, value: commitment.end_date %>
+                            <%= f.check_box :completed, 
+                                class: "h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500",
+                                data: { 
+                                  action: "change->commitment#toggle",
+                                  commitment_target: "checkbox"
+                                } %>
+                          <% end %>
+                          <div class="flex-grow">
+                            <h4 class="text-sm font-medium text-gray-900"><%= commitment.title %></h4>
+                            <p class="text-xs text-gray-500 mt-1"><%= commitment.description %></p>
+                          </div>
+                        </div>
+                        <%= link_to edit_commitment_path(commitment), class: "flex-shrink-0 text-gray-400 hover:text-gray-500" do %>
+                          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                        <% end %>
                       </div>
                     </div>
-                    <%= link_to edit_commitment_path(commitment), class: "flex-shrink-0 text-gray-400 hover:text-gray-500" do %>
-                      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
-                    <% end %>
-                  </div>
+                  <% end %>
                 </div>
               <% end %>
               

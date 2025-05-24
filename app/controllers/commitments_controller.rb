@@ -6,12 +6,16 @@ class CommitmentsController < ApplicationController
     @commitments = current_user.commitments.includes(:category)
     @categories = current_user.categories.order(:position)
     
-    # Group commitments by frequency for the view
-    @grouped_commitments = {
-      'daily' => @commitments.where(frequency: 'daily').order(created_at: :desc),
-      'weekly' => @commitments.where(frequency: 'weekly').order(created_at: :desc),
-      'monthly' => @commitments.where(frequency: 'monthly').order(created_at: :desc)
-    }
+    # Group commitments by frequency and then by category
+    @grouped_commitments = {}
+    Commitment.frequencies.keys.each do |frequency|
+      frequency_commitments = @commitments.where(frequency: frequency)
+      @grouped_commitments[frequency] = frequency_commitments
+        .group_by(&:category)
+        .sort_by { |category, _| category.position }
+        .to_h
+        .transform_values { |commitments| commitments.sort_by(&:position) }
+    end
     
     # Calculate stats for the dashboard
     @stats = {
