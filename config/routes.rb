@@ -13,7 +13,6 @@ Rails.application.routes.draw do
   resources :categories
   resources :milestones
   resources :commitments do
-    resources :comments, only: [:create, :destroy]
     resources :completions, only: [:create, :update, :destroy], controller: 'completions'
     
     member do

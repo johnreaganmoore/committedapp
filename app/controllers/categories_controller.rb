@@ -8,7 +8,6 @@ class CategoriesController < ApplicationController
 
   def show
     @commitments = @category.commitments.active.includes(:milestones)
-    @comments = @category.comments.top_level.includes(:user, :replies)
   end
 
   def new

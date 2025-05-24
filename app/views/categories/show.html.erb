@@ -1,59 +1,98 @@
 <div class="container mx-auto px-4 py-8">
-  <div class="max-w-4xl mx-auto">
+  <div class="max-w-7xl mx-auto">
     <!-- Category Header -->
-    <div class="bg-white rounded-lg shadow p-6 mb-8">
-      <div class="flex justify-between items-center mb-4">
-        <h1 class="text-2xl font-bold"><%= @category.name %></h1>
-        <div class="flex space-x-2">
-          <%= link_to 'Edit', edit_category_path(@category), class: "text-blue-600 hover:text-blue-800" %>
-          <%= link_to 'Delete', @category, method: :delete, data: { confirm: 'Are you sure?' }, class: "text-red-600 hover:text-red-800" %>
+    <div class="mb-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900"><%= @category.name %></h1>
+          <p class="mt-1 text-sm text-gray-500">Track your progress and stay accountable</p>
+        </div>
+        <%= link_to "Back to Commitments", commitments_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+      </div>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 mb-8">
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <dt class="text-sm font-medium text-gray-500 truncate">Total Commitments</dt>
+          <dd class="mt-1 text-3xl font-semibold text-gray-900"><%= @category.commitments.count %></dd>
         </div>
       </div>
-      <p class="text-gray-600"><%= @category.description %></p>
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <dt class="text-sm font-medium text-gray-500 truncate">Current Streak</dt>
+          <dd class="mt-1 text-3xl font-semibold text-gray-900">
+            <%= @category.commitments.maximum(:streak_count) || 0 %> days
+          </dd>
+        </div>
+      </div>
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <dt class="text-sm font-medium text-gray-500 truncate">Longest Streak</dt>
+          <dd class="mt-1 text-3xl font-semibold text-gray-900">
+            <%= @category.commitments.maximum(:longest_streak) || 0 %> days
+          </dd>
+        </div>
+      </div>
     </div>
 
-    <!-- Commitments Section -->
-    <div class="bg-white rounded-lg shadow p-6 mb-8">
-      <h2 class="text-xl font-semibold mb-4">Commitments</h2>
-      <%= link_to 'New Commitment', new_category_commitment_path(@category), class: "text-blue-600 hover:text-blue-800 mb-4 inline-block" %>
-      
-      <% if @commitments.any? %>
-        <div class="space-y-4">
-          <% @commitments.each do |commitment| %>
-            <div class="flex items-center justify-between p-4 bg-gray-50 rounded">
-              <div>
-                <h3 class="font-medium"><%= commitment.title %></h3>
-                <div class="flex items-center space-x-2 text-sm text-gray-500">
-                  <span><%= commitment.frequency.humanize %> commitment</span>
-                  <span><%= commitment.start_date.strftime('%b %d, %Y') %></span>
+    <!-- Commitments List -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+      <ul role="list" class="divide-y divide-gray-200">
+        <% @category.commitments.order(frequency: :asc).each do |commitment| %>
+          <li>
+            <div class="px-4 py-4 sm:px-6">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <%= form_with(model: commitment, local: false, class: "flex-shrink-0", data: { controller: "commitment" }) do |f| %>
+                    <%= f.hidden_field :title, value: commitment.title %>
+                    <%= f.hidden_field :description, value: commitment.description %>
+                    <%= f.hidden_field :category_id, value: commitment.category_id %>
+                    <%= f.hidden_field :frequency, value: commitment.frequency %>
+                    <%= f.hidden_field :start_date, value: commitment.start_date %>
+                    <%= f.hidden_field :end_date, value: commitment.end_date %>
+                    <%= f.check_box :completed, 
+                        class: "h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500",
+                        data: { 
+                          action: "change->commitment#toggle",
+                          commitment_target: "checkbox"
+                        } %>
+                  <% end %>
+                  <div class="ml-3">
+                    <p class="text-sm font-medium text-gray-900"><%= commitment.title %></p>
+                    <p class="text-sm text-gray-500"><%= commitment.description %></p>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                  <div class="text-sm text-gray-500">
+                    <span class="font-medium">Current Streak:</span> <%= commitment.streak_count %> days
+                  </div>
+                  <div class="text-sm text-gray-500">
+                    <span class="font-medium">Longest Streak:</span> <%= commitment.longest_streak %> days
+                  </div>
+                  <div class="text-sm text-gray-500">
+                    <span class="font-medium">Reset:</span>
+                    <% case commitment.frequency %>
+                    <% when 'daily' %>
+                      <%= commitment.daily_reset_time&.strftime("%I:%M %p") %>
+                    <% when 'weekly' %>
+                      <%= Date::DAYNAMES[commitment.weekly_reset_day] %>
+                    <% when 'monthly' %>
+                      <%= commitment.monthly_reset_day.ordinalize %>
+                    <% end %>
+                  </div>
+                  <%= link_to edit_commitment_path(commitment), class: "text-gray-400 hover:text-gray-500" do %>
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  <% end %>
                 </div>
               </div>
-              <div class="flex space-x-2">
-                <%= link_to 'View', commitment_path(commitment), class: "text-blue-600 hover:text-blue-800" %>
-                <%= link_to 'Edit', edit_commitment_path(commitment), class: "text-blue-600 hover:text-blue-800" %>
-              </div>
             </div>
-          <% end %>
-        </div>
-      <% else %>
-        <p class="text-gray-500">No commitments yet.</p>
-      <% end %>
-    </div>
-
-    <!-- Comments Section -->
-    <div class="bg-white rounded-lg shadow p-6">
-      <h2 class="text-xl font-semibold mb-4">Comments</h2>
-      <%= render 'comments/form', commentable: @category %>
-      
-      <% if @comments.any? %>
-        <div class="space-y-4">
-          <% @comments.each do |comment| %>
-            <%= render 'comments/comment', comment: comment %>
-          <% end %>
-        </div>
-      <% else %>
-        <p class="text-gray-500">No comments yet.</p>
-      <% end %>
+          </li>
+        <% end %>
+      </ul>
     </div>
   </div>
 </div>

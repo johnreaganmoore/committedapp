@@ -4,23 +4,39 @@ class Commitment < ApplicationRecord
   belongs_to :category
   has_many :commitment_milestones, dependent: :destroy
   has_many :milestones, through: :commitment_milestones
-  has_many :comments, as: :commentable, dependent: :destroy
   has_many :completions, dependent: :destroy
 
   # Enum for frequency
-  enum frequency: { daily: 0, weekly: 1, monthly: 2 }
+  enum frequency: {
+    daily: 0,
+    weekly: 1,
+    monthly: 2
+  }
 
   # Validations
   validates :title, presence: true, length: { maximum: 100 }
   validates :description, length: { maximum: 500 }
   validates :frequency, presence: true, inclusion: { in: Commitment.frequencies.keys }
   validates :completed, inclusion: { in: [true, false] }
+  validates :daily_reset_time, presence: true, if: :daily?
+  validates :weekly_reset_day, presence: true, if: :weekly?
+  validates :monthly_reset_day, presence: true, if: :monthly?
+  validate :validate_reset_day_ranges
 
   # Scopes
   scope :active, -> { where(completed: false) }
   scope :for_user, ->(user) { where(user: user) }
   scope :completed, -> { where(completed: true) }
   scope :incomplete, -> { where(completed: false) }
+  scope :needs_reset, -> {
+    now = Time.current
+    daily.where("daily_reset_time <= ? AND (last_reset_at IS NULL OR last_reset_at < ?)", 
+                now.strftime("%H:%M"), now.beginning_of_day)
+      .or(weekly.where("weekly_reset_day = ? AND (last_reset_at IS NULL OR last_reset_at < ?)", 
+                      now.wday, now.beginning_of_week))
+      .or(monthly.where("monthly_reset_day = ? AND (last_reset_at IS NULL OR last_reset_at < ?)", 
+                       now.day, now.beginning_of_month))
+  }
 
   # Public method for displaying frequency in views
   def frequency_i18n
@@ -173,8 +189,56 @@ class Commitment < ApplicationRecord
     else 0
     end
   end
-  
+
+  def reset_if_needed
+    return unless needs_reset?
+    
+    if completed
+      increment_streak
+    else
+      reset_streak
+    end
+    
+    update(completed: false, last_reset_at: Time.current)
+  end
+
+  def needs_reset?
+    return false if last_reset_at.nil?
+    
+    now = Time.current
+    case frequency
+    when 'daily'
+      last_reset_at < now.beginning_of_day && now.strftime("%H:%M") >= daily_reset_time.strftime("%H:%M")
+    when 'weekly'
+      last_reset_at < now.beginning_of_week && now.wday == weekly_reset_day
+    when 'monthly'
+      last_reset_at < now.beginning_of_month && now.day == monthly_reset_day
+    else
+      false
+    end
+  end
+
+  def increment_streak
+    new_streak = streak_count + 1
+    update(
+      streak_count: new_streak,
+      longest_streak: [longest_streak, new_streak].max
+    )
+  end
+
+  def reset_streak
+    update(streak_count: 0)
+  end
+
+  after_initialize :set_default_reset_fields, if: :new_record?
+
   private
+
+  def set_default_reset_fields
+    self.daily_reset_time ||= Time.parse('00:00') if daily?
+    self.weekly_reset_day ||= 1 if weekly?
+    self.monthly_reset_day ||= 1 if monthly?
+  end
 
   # Set default frequency to daily if not specified
   def set_default_frequency
@@ -186,4 +250,18 @@ class Commitment < ApplicationRecord
   scope :active, -> { where('end_date >= ? OR end_date IS NULL', Date.current) }
   scope :completed, -> { where(completed: true) }
   scope :incomplete, -> { where(completed: false) }
+
+  def validate_reset_day_ranges
+    if weekly? && weekly_reset_day.present?
+      unless (0..6).include?(weekly_reset_day)
+        errors.add(:weekly_reset_day, "must be between 0 and 6")
+      end
+    end
+
+    if monthly? && monthly_reset_day.present?
+      unless (1..31).include?(monthly_reset_day)
+        errors.add(:monthly_reset_day, "must be between 1 and 31")
+      end
+    end
+  end
 end
