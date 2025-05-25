@@ -1,131 +1,357 @@
-<div class="container mx-auto px-4 py-8">
-  <div class="max-w-7xl mx-auto">
+<div class="container mx-auto px-2 py-8">
+  <div>
     <%= render "celebration_modal" %>
     
     <!-- Page Header -->
-    <div class="mb-6">
-      <h1 class="text-3xl font-bold text-gray-900">Commitments</h1>
-      <p class="mt-1 text-sm text-gray-500">Track your progress and stay accountable</p>
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold text-gray-900">Commitments</h1>
+      <p class="mt-2 text-lg text-gray-500">Track your progress and stay accountable</p>
     </div>
 
-    <!-- Trello Board Layout -->
-    <div class="flex space-x-4 overflow-x-auto pb-4">
-      <% Commitment.frequencies.keys.each do |frequency| %>
-        <div class="flex-shrink-0 w-80" data-frequency="<%= frequency %>">
-          <div class="bg-gray-100 rounded-lg p-4">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4 capitalize">
-              <%= frequency %>
-              <span class="text-sm font-normal text-gray-500" data-commitment-target="count">
-                (<%= @commitments.where(frequency: frequency).completed.count %>/<%= @commitments.where(frequency: frequency).count %>)
-              </span>
-            </h3>
-            <div class="space-y-6" data-commitment-target="column">
-              <% @grouped_commitments[frequency].each do |category, commitments| %>
-                <div class="space-y-3" data-category-id="<%= category.id %>">
-                  <h4 class="text-sm font-medium text-gray-700 px-2"><%= category.name %></h4>
-                  <% commitments.each do |commitment| %>
-                    <div class="bg-white rounded-lg shadow p-4 pb-2" data-commitment-frequency="<%= commitment.frequency %>">
-                      <div class="flex justify-between space-x-3">
-                        <div class="flex items-start space-x-3">
-                          <%= form_with(model: commitment, local: false, class: "flex-shrink-0", data: { controller: "commitment" }) do |f| %>
-                            <%= f.hidden_field :title, value: commitment.title %>
-                            <%= f.hidden_field :description, value: commitment.description %>
-                            <%= f.hidden_field :category_id, value: commitment.category_id %>
-                            <%= f.hidden_field :frequency, value: commitment.frequency, required: true %>
-                            <%= f.hidden_field :start_date, value: commitment.start_date %>
-                            <%= f.hidden_field :end_date, value: commitment.end_date %>
-                            <%= f.check_box :completed, 
-                                class: "h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500",
-                                data: { 
-                                  action: "change->commitment#toggle",
-                                  commitment_target: "checkbox"
-                                } %>
-                          <% end %>
-                          <div class="flex-grow">
-                            <h4 class="text-sm font-medium text-gray-900"><%= commitment.title %></h4>
-                            <p class="text-xs text-gray-500 mt-1"><%= commitment.description %></p>
-                          </div>
-                        </div>
-                        <%= link_to edit_commitment_path(commitment), class: "flex-shrink-0 text-gray-400 hover:text-gray-500" do %>
-                          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
+    <!-- Stacked Columns Layout -->
+    <div class="flex flex-col gap-8">
+      <div class="w-full">
+        <div class="bg-gray-100 rounded-xl p-8">
+          <h3 class="text-2xl font-semibold text-gray-900 mb-6 capitalize">
+            Daily
+            <span class="text-lg font-normal text-gray-500" data-commitment-target="count">
+              (<%= @commitments.where(frequency: 'daily').completed.count %>/<%= @commitments.where(frequency: 'daily').count %>)
+            </span>
+          </h3>
+          <div class="space-y-8" data-commitment-target="column">
+            <% @grouped_commitments['daily'].each do |category, commitments| %>
+              <div class="space-y-4" data-category-id="<%= category.id %>">
+                <h4 class="text-lg font-medium text-gray-700 px-2"><%= category.name %></h4>
+                <% commitments.each do |commitment| %>
+                  <div class="bg-white rounded-xl shadow p-6 pb-3" data-commitment-frequency="<%= commitment.frequency %>">
+                    <div class="flex justify-between space-x-4">
+                      <div class="flex items-start space-x-4">
+                        <%= form_with(model: commitment, local: false, class: "flex-shrink-0", data: { controller: "commitment" }) do |f| %>
+                          <%= f.hidden_field :title, value: commitment.title %>
+                          <%= f.hidden_field :description, value: commitment.description %>
+                          <%= f.hidden_field :category_id, value: commitment.category_id %>
+                          <%= f.hidden_field :frequency, value: commitment.frequency, required: true %>
+                          <%= f.hidden_field :start_date, value: commitment.start_date %>
+                          <%= f.hidden_field :end_date, value: commitment.end_date %>
+                          <%= f.check_box :completed, 
+                              class: "h-6 w-6 text-blue-600 rounded border-gray-300 focus:ring-blue-500",
+                              data: { 
+                                action: "change->commitment#toggle",
+                                commitment_target: "checkbox"
+                              } %>
                         <% end %>
-                      </div>
-                    </div>
-                  <% end %>
-                </div>
-              <% end %>
-              
-              <!-- New Commitment Form -->
-              <div class="mt-4" data-controller="new-commitment">
-                <div data-new-commitment-target="buttonContainer">
-                  <button type="button" 
-                          class="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                          data-action="click->new-commitment#showForm">
-                    <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    New <%= frequency.capitalize %> Commitment
-                  </button>
-                </div>
-
-                <div class="hidden bg-white rounded-lg shadow p-4" data-new-commitment-target="formContainer">
-                  <%= form_with(model: Commitment.new, local: false, class: "space-y-3", data: { action: "submit->new-commitment#create" }) do |f| %>
-                    <%= f.hidden_field :frequency, value: frequency %>
-                    <%= f.hidden_field :user_id, value: current_user.id %>
-                    <%= f.hidden_field :completed, value: false %>
-                    
-                    <div>
-                      <%= f.label :title, class: "block text-sm font-medium text-gray-700" %>
-                      <%= f.text_field :title, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm", required: true %>
-                    </div>
-
-                    <div data-controller="inline-category">
-                      <%= f.label :category_id, 'Category', class: "block text-sm font-medium text-gray-700" %>
-                      <div class="mt-1">
-                        <%= f.select :category_id, 
-                          options_for_select([['Select a category', '']] + @categories.map { |c| [c.name, c.id] }),
-                          {},
-                          { class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm",
-                            data: { inline_category_target: "select" } }
-                        %>
-                        <div data-inline-category-target="newCategory" class="hidden mt-2">
-                          <input type="text" 
-                                 data-inline-category-target="input" 
-                                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                                 placeholder="Enter new category name">
-                          <button type="button" 
-                                  data-inline-category-target="button" 
-                                  data-action="click->inline-category#createCategory"
-                                  class="mt-2 inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                            Create Category
-                          </button>
+                        <div class="flex-grow">
+                          <h4 class="text-lg font-medium text-gray-900"><%= commitment.title %></h4>
+                          <p class="text-base text-gray-500 mt-2"><%= commitment.description %></p>
                         </div>
+                      </div>
+                      <%= link_to edit_commitment_path(commitment), class: "flex-shrink-0 text-gray-400 hover:text-gray-500" do %>
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      <% end %>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+            
+            <!-- New Commitment Form -->
+            <div class="mt-6" data-controller="new-commitment">
+              <div data-new-commitment-target="buttonContainer">
+                <button type="button" 
+                        class="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent text-lg font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        data-action="click->new-commitment#showForm">
+                  <svg class="h-6 w-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                  New Daily Commitment
+                </button>
+              </div>
+
+              <div class="hidden bg-white rounded-xl shadow p-6" data-new-commitment-target="formContainer">
+                <%= form_with(model: Commitment.new, local: false, class: "space-y-4", data: { action: "submit->new-commitment#create" }) do |f| %>
+                  <%= f.hidden_field :frequency, value: 'daily' %>
+                  <%= f.hidden_field :user_id, value: current_user.id %>
+                  <%= f.hidden_field :completed, value: false %>
+                  
+                  <div>
+                    <%= f.label :title, class: "block text-lg font-medium text-gray-700" %>
+                    <%= f.text_field :title, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg", required: true %>
+                  </div>
+
+                  <div data-controller="inline-category">
+                    <%= f.label :category_id, 'Category', class: "block text-lg font-medium text-gray-700" %>
+                    <div class="mt-1">
+                      <%= f.select :category_id, 
+                        options_for_select([['Select a category', '']] + @categories.map { |c| [c.name, c.id] }),
+                        {},
+                        { class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg",
+                          data: { inline_category_target: "select" } }
+                      %>
+                      <div data-inline-category-target="newCategory" class="hidden mt-2">
+                        <input type="text" 
+                               data-inline-category-target="input" 
+                               class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg"
+                               placeholder="Enter new category name">
                         <button type="button" 
                                 data-inline-category-target="button" 
-                                data-action="click->inline-category#toggleNewCategory"
-                                class="mt-2 inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                          Add New Category
+                                data-action="click->inline-category#createCategory"
+                                class="mt-2 inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-lg font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                          Create Category
                         </button>
                       </div>
-                    </div>
-
-                    <div class="flex justify-end space-x-3">
                       <button type="button" 
-                              class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                              data-action="click->new-commitment#hideForm">
-                        Cancel
+                              data-inline-category-target="button" 
+                              data-action="click->inline-category#toggleNewCategory"
+                              class="mt-2 inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-lg font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Add New Category
                       </button>
-                      <%= f.submit "Create", class: "inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
                     </div>
-                  <% end %>
-                </div>
+                  </div>
+
+                  <div class="flex justify-end space-x-4">
+                    <button type="button" 
+                            class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-lg font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            data-action="click->new-commitment#hideForm">
+                      Cancel
+                    </button>
+                    <%= f.submit "Create", class: "inline-flex items-center px-4 py-2 border border-transparent text-lg font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+                  </div>
+                <% end %>
               </div>
             </div>
           </div>
         </div>
-      <% end %>
+      </div>
+      <div class="w-full">
+        <div class="bg-gray-100 rounded-xl p-8">
+          <h3 class="text-2xl font-semibold text-gray-900 mb-6 capitalize">
+            Weekly
+            <span class="text-lg font-normal text-gray-500" data-commitment-target="count">
+              (<%= @commitments.where(frequency: 'weekly').completed.count %>/<%= @commitments.where(frequency: 'weekly').count %>)
+            </span>
+          </h3>
+          <div class="space-y-8" data-commitment-target="column">
+            <% @grouped_commitments['weekly'].each do |category, commitments| %>
+              <div class="space-y-4" data-category-id="<%= category.id %>">
+                <h4 class="text-lg font-medium text-gray-700 px-2"><%= category.name %></h4>
+                <% commitments.each do |commitment| %>
+                  <div class="bg-white rounded-xl shadow p-6 pb-3" data-commitment-frequency="<%= commitment.frequency %>">
+                    <div class="flex justify-between space-x-4">
+                      <div class="flex items-start space-x-4">
+                        <%= form_with(model: commitment, local: false, class: "flex-shrink-0", data: { controller: "commitment" }) do |f| %>
+                          <%= f.hidden_field :title, value: commitment.title %>
+                          <%= f.hidden_field :description, value: commitment.description %>
+                          <%= f.hidden_field :category_id, value: commitment.category_id %>
+                          <%= f.hidden_field :frequency, value: commitment.frequency, required: true %>
+                          <%= f.hidden_field :start_date, value: commitment.start_date %>
+                          <%= f.hidden_field :end_date, value: commitment.end_date %>
+                          <%= f.check_box :completed, 
+                              class: "h-6 w-6 text-blue-600 rounded border-gray-300 focus:ring-blue-500",
+                              data: { 
+                                action: "change->commitment#toggle",
+                                commitment_target: "checkbox"
+                              } %>
+                        <% end %>
+                        <div class="flex-grow">
+                          <h4 class="text-lg font-medium text-gray-900"><%= commitment.title %></h4>
+                          <p class="text-base text-gray-500 mt-2"><%= commitment.description %></p>
+                        </div>
+                      </div>
+                      <%= link_to edit_commitment_path(commitment), class: "flex-shrink-0 text-gray-400 hover:text-gray-500" do %>
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      <% end %>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+            
+            <!-- New Commitment Form -->
+            <div class="mt-6" data-controller="new-commitment">
+              <div data-new-commitment-target="buttonContainer">
+                <button type="button" 
+                        class="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent text-lg font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        data-action="click->new-commitment#showForm">
+                  <svg class="h-6 w-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                  New Weekly Commitment
+                </button>
+              </div>
+
+              <div class="hidden bg-white rounded-xl shadow p-6" data-new-commitment-target="formContainer">
+                <%= form_with(model: Commitment.new, local: false, class: "space-y-4", data: { action: "submit->new-commitment#create" }) do |f| %>
+                  <%= f.hidden_field :frequency, value: 'weekly' %>
+                  <%= f.hidden_field :user_id, value: current_user.id %>
+                  <%= f.hidden_field :completed, value: false %>
+                  
+                  <div>
+                    <%= f.label :title, class: "block text-lg font-medium text-gray-700" %>
+                    <%= f.text_field :title, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg", required: true %>
+                  </div>
+
+                  <div data-controller="inline-category">
+                    <%= f.label :category_id, 'Category', class: "block text-lg font-medium text-gray-700" %>
+                    <div class="mt-1">
+                      <%= f.select :category_id, 
+                        options_for_select([['Select a category', '']] + @categories.map { |c| [c.name, c.id] }),
+                        {},
+                        { class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg",
+                          data: { inline_category_target: "select" } }
+                      %>
+                      <div data-inline-category-target="newCategory" class="hidden mt-2">
+                        <input type="text" 
+                               data-inline-category-target="input" 
+                               class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg"
+                               placeholder="Enter new category name">
+                        <button type="button" 
+                                data-inline-category-target="button" 
+                                data-action="click->inline-category#createCategory"
+                                class="mt-2 inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-lg font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                          Create Category
+                        </button>
+                      </div>
+                      <button type="button" 
+                              data-inline-category-target="button" 
+                              data-action="click->inline-category#toggleNewCategory"
+                              class="mt-2 inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-lg font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Add New Category
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="flex justify-end space-x-4">
+                    <button type="button" 
+                            class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-lg font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            data-action="click->new-commitment#hideForm">
+                      Cancel
+                    </button>
+                    <%= f.submit "Create", class: "inline-flex items-center px-4 py-2 border border-transparent text-lg font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="w-full">
+        <div class="bg-gray-100 rounded-xl p-8">
+          <h3 class="text-2xl font-semibold text-gray-900 mb-6 capitalize">
+            Monthly
+            <span class="text-lg font-normal text-gray-500" data-commitment-target="count">
+              (<%= @commitments.where(frequency: 'monthly').completed.count %>/<%= @commitments.where(frequency: 'monthly').count %>)
+            </span>
+          </h3>
+          <div class="space-y-8" data-commitment-target="column">
+            <% @grouped_commitments['monthly'].each do |category, commitments| %>
+              <div class="space-y-4" data-category-id="<%= category.id %>">
+                <h4 class="text-lg font-medium text-gray-700 px-2"><%= category.name %></h4>
+                <% commitments.each do |commitment| %>
+                  <div class="bg-white rounded-xl shadow p-6 pb-3" data-commitment-frequency="<%= commitment.frequency %>">
+                    <div class="flex justify-between space-x-4">
+                      <div class="flex items-start space-x-4">
+                        <%= form_with(model: commitment, local: false, class: "flex-shrink-0", data: { controller: "commitment" }) do |f| %>
+                          <%= f.hidden_field :title, value: commitment.title %>
+                          <%= f.hidden_field :description, value: commitment.description %>
+                          <%= f.hidden_field :category_id, value: commitment.category_id %>
+                          <%= f.hidden_field :frequency, value: commitment.frequency, required: true %>
+                          <%= f.hidden_field :start_date, value: commitment.start_date %>
+                          <%= f.hidden_field :end_date, value: commitment.end_date %>
+                          <%= f.check_box :completed, 
+                              class: "h-6 w-6 text-blue-600 rounded border-gray-300 focus:ring-blue-500",
+                              data: { 
+                                action: "change->commitment#toggle",
+                                commitment_target: "checkbox"
+                              } %>
+                        <% end %>
+                        <div class="flex-grow">
+                          <h4 class="text-lg font-medium text-gray-900"><%= commitment.title %></h4>
+                          <p class="text-base text-gray-500 mt-2"><%= commitment.description %></p>
+                        </div>
+                      </div>
+                      <%= link_to edit_commitment_path(commitment), class: "flex-shrink-0 text-gray-400 hover:text-gray-500" do %>
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      <% end %>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+            
+            <!-- New Commitment Form -->
+            <div class="mt-6" data-controller="new-commitment">
+              <div data-new-commitment-target="buttonContainer">
+                <button type="button" 
+                        class="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent text-lg font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        data-action="click->new-commitment#showForm">
+                  <svg class="h-6 w-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                  New Monthly Commitment
+                </button>
+              </div>
+
+              <div class="hidden bg-white rounded-xl shadow p-6" data-new-commitment-target="formContainer">
+                <%= form_with(model: Commitment.new, local: false, class: "space-y-4", data: { action: "submit->new-commitment#create" }) do |f| %>
+                  <%= f.hidden_field :frequency, value: 'monthly' %>
+                  <%= f.hidden_field :user_id, value: current_user.id %>
+                  <%= f.hidden_field :completed, value: false %>
+                  
+                  <div>
+                    <%= f.label :title, class: "block text-lg font-medium text-gray-700" %>
+                    <%= f.text_field :title, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg", required: true %>
+                  </div>
+
+                  <div data-controller="inline-category">
+                    <%= f.label :category_id, 'Category', class: "block text-lg font-medium text-gray-700" %>
+                    <div class="mt-1">
+                      <%= f.select :category_id, 
+                        options_for_select([['Select a category', '']] + @categories.map { |c| [c.name, c.id] }),
+                        {},
+                        { class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg",
+                          data: { inline_category_target: "select" } }
+                      %>
+                      <div data-inline-category-target="newCategory" class="hidden mt-2">
+                        <input type="text" 
+                               data-inline-category-target="input" 
+                               class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg"
+                               placeholder="Enter new category name">
+                        <button type="button" 
+                                data-inline-category-target="button" 
+                                data-action="click->inline-category#createCategory"
+                                class="mt-2 inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-lg font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                          Create Category
+                        </button>
+                      </div>
+                      <button type="button" 
+                              data-inline-category-target="button" 
+                              data-action="click->inline-category#toggleNewCategory"
+                              class="mt-2 inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-lg font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Add New Category
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="flex justify-end space-x-4">
+                    <button type="button" 
+                            class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-lg font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            data-action="click->new-commitment#hideForm">
+                      Cancel
+                    </button>
+                    <%= f.submit "Create", class: "inline-flex items-center px-4 py-2 border border-transparent text-lg font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

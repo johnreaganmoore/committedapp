@@ -10,7 +10,11 @@ Rails.application.routes.draw do
     registrations: 'users/registrations'
   }
   resources :groups
-  resources :categories
+  resources :categories do
+    member do
+      patch :reposition
+    end
+  end
   resources :milestones
   resources :commitments do
     resources :completions, only: [:create, :update, :destroy], controller: 'completions'

@@ -20,5 +20,13 @@
         <%= f.number_field :position, class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
       </div>
     </div>
+
+    <div>
+      <%= f.label :color, class: "block text-sm font-medium text-gray-700" %>
+      <div class="mt-1 flex items-center space-x-2">
+        <%= f.color_field :color, class: "h-8 w-8 rounded border-gray-300" %>
+        <span class="text-sm text-gray-500">Choose a color for this category</span>
+      </div>
+    </div>
   </div>
 <% end %>
