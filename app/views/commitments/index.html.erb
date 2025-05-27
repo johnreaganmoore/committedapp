@@ -1,4 +1,4 @@
-<div class="container mx-auto px-2 py-8">
+<div class="container mx-auto px-2 pb-8">
   <div>
     <%= render "celebration_modal" %>
     
@@ -8,10 +8,10 @@
       <p class="mt-2 text-lg text-gray-500">Track your progress and stay accountable</p>
     </div>
 
-    <!-- Stacked Columns Layout -->
-    <div class="flex flex-col gap-8">
+    <!-- Responsive Grid Layout -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       <div class="w-full">
-        <div class="bg-gray-100 rounded-xl p-8">
+        <div class="bg-gray-100 rounded-xl p-8 h-full">
           <h3 class="text-2xl font-semibold text-gray-900 mb-6 capitalize">
             Daily
             <span class="text-lg font-normal text-gray-500" data-commitment-target="count">
@@ -125,7 +125,7 @@
         </div>
       </div>
       <div class="w-full">
-        <div class="bg-gray-100 rounded-xl p-8">
+        <div class="bg-gray-100 rounded-xl p-8 h-full">
           <h3 class="text-2xl font-semibold text-gray-900 mb-6 capitalize">
             Weekly
             <span class="text-lg font-normal text-gray-500" data-commitment-target="count">
@@ -239,7 +239,7 @@
         </div>
       </div>
       <div class="w-full">
-        <div class="bg-gray-100 rounded-xl p-8">
+        <div class="bg-gray-100 rounded-xl p-8 h-full">
           <h3 class="text-2xl font-semibold text-gray-900 mb-6 capitalize">
             Monthly
             <span class="text-lg font-normal text-gray-500" data-commitment-target="count">

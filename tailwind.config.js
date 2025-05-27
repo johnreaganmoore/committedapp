@@ -23,6 +23,9 @@ module.exports = {
     'z-40',
     'hidden',
     'lg:hidden',
+    'border-l-4',
+    'border-blue-500',
+    'border-blue-600',
   ],
   corePlugins: {
     transform: true,
@@ -30,6 +33,8 @@ module.exports = {
     transitionProperty: true,
     transitionDuration: true,
     transitionTimingFunction: true,
+    borderWidth: true,
+    borderColor: true,
   },
   theme: {
     extend: {

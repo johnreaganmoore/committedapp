@@ -9,16 +9,17 @@ export default class extends Controller {
 
   open() {
     console.log("Opening sidebar")
-    // Show elements
-    this.backdropTarget.classList.remove("hidden")
+    // Remove hidden classes first
     this.panelTarget.classList.remove("hidden")
+    this.backdropTarget.classList.remove("hidden")
+    
+    // Force a reflow to ensure the transition works
+    this.panelTarget.offsetHeight
     
     // Enable backdrop and show panel
-    requestAnimationFrame(() => {
-      this.backdropTarget.classList.remove("opacity-0")
-      this.backdropTarget.classList.remove("pointer-events-none")
-      this.panelTarget.classList.remove("-translate-x-full")
-    })
+    this.backdropTarget.classList.remove("opacity-0")
+    this.backdropTarget.classList.remove("pointer-events-none")
+    this.panelTarget.classList.remove("-translate-x-full")
   }
 
   close() {
