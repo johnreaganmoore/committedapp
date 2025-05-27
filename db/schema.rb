@@ -46,13 +46,13 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_24_191358) do
     t.integer "position"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "category_id"
-    t.time "daily_reset_time"
-    t.integer "weekly_reset_day"
-    t.integer "monthly_reset_day"
+    t.time "daily_reset_time", default: "2000-01-01 00:00:00"
+    t.integer "weekly_reset_day", default: 1
+    t.integer "monthly_reset_day", default: 1
     t.datetime "last_reset_at"
     t.integer "streak_count", default: 0
     t.integer "longest_streak", default: 0
+    t.integer "category_id"
     t.integer "current_streak"
     t.integer "best_streak"
     t.index ["user_id"], name: "index_commitments_on_user_id"
@@ -74,8 +74,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_24_191358) do
   create_table "group_memberships", force: :cascade do |t|
     t.bigint "group_id", null: false
     t.bigint "user_id", null: false
-    t.string "role"
-    t.datetime "joined_at"
+    t.integer "role", default: 0, null: false
     t.integer "position"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
