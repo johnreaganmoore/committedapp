@@ -43,7 +43,6 @@
             <% @upcoming_commitments.each do |commitment| %>
               <li class="flex items-center justify-between">
                 <span><%= commitment.title %></span>
-                <span class="text-sm text-gray-600"><%= commitment.start_date.to_s(:short) %></span>
               </li>
             <% end %>
           </ul>
@@ -159,20 +158,6 @@
                     <%= f.label :frequency, class: "block text-sm font-medium text-gray-700" %>
                     <div class="mt-1">
                       <%= f.select :frequency, Commitment.frequencies.keys.map { |f| [f.humanize, f] }, {}, class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
-                    </div>
-                  </div>
-
-                  <div>
-                    <%= f.label :start_date, class: "block text-sm font-medium text-gray-700" %>
-                    <div class="mt-1">
-                      <%= f.date_field :start_date, class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
-                    </div>
-                  </div>
-
-                  <div>
-                    <%= f.label :end_date, class: "block text-sm font-medium text-gray-700" %>
-                    <div class="mt-1">
-                      <%= f.date_field :end_date, class: "appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" %>
                     </div>
                   </div>
                 </div>
