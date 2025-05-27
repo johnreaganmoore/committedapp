@@ -4,7 +4,7 @@
 # http://en.wikipedia.org/wiki/Cron
 
 # Load Rails environment
-require File.expand_path('../config/environment', __FILE__)
+require File.expand_path('../../config/environment', __FILE__)
 
 # Example:
 #
