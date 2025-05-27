@@ -3,6 +3,9 @@
 # It's helpful, but not entirely necessary to understand cron before proceeding.
 # http://en.wikipedia.org/wiki/Cron
 
+# Load Rails environment
+require File.expand_path('../config/environment', __FILE__)
+
 # Example:
 #
 # set :output, "/path/to/my/cron_log.log"
@@ -18,6 +21,9 @@
 # end
 
 # Learn more: http://github.com/javan/whenever
+
+# Set the environment
+set :environment, Rails.env
 
 # Run the daily completions job at 12:05 AM every day
 every 1.day, at: '12:05 am' do
