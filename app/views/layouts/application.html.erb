@@ -19,7 +19,7 @@
           <aside class="h-full bg-white border-r border-gray-200 shadow-sm flex flex-col">
             <div class="h-16 flex items-center px-6 font-bold text-xl border-b border-gray-200">
               <%= link_to root_path, class: "flex items-center" do %>
-                <span class="text-xl font-bold text-gray-900">Accountability</span>
+                <span class="text-xl font-bold text-gray-900">Committed</span>
               <% end %>
             </div>
             <nav class="flex-1 gap-4 px-4 py-6 space-y-1">
@@ -89,7 +89,9 @@
             <div class="flex flex-1 justify-between px-4">
               <div class="flex flex-1">
                 <h1 class="text-2xl font-semibold text-gray-900 py-4">
-                  <%= content_for?(:title) ? yield(:title) : controller_name.titleize %>
+                  <%= link_to root_path, class: "flex items-center" do %>
+                    <span class="text-xl font-bold text-gray-900">Committed</span>
+                  <% end %>
                 </h1>
               </div>
             </div>

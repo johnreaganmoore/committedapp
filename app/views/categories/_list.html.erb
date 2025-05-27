@@ -4,6 +4,7 @@
       <% color = category.color.presence || '#3B82F6' %>
       <li class="bg-white shadow rounded-lg overflow-hidden px-4 py-4 hover:bg-gray-50 cursor-move relative pl-3 sm:pl-6" 
           draggable="true"
+          data-sortable-target="item"
           data-id="<%= category.id %>">
         <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: <%= color %>;"></div>
         <div class="flex items-center justify-between">
