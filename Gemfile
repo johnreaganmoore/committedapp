@@ -82,3 +82,5 @@ gem "acts_as_list", "~> 1.2"
 
 gem 'sidekiq', '~> 7.2'
 gem 'sidekiq-scheduler', '~> 5.0'
+
+gem 'rmagick'
