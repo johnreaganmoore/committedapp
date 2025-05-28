@@ -13,13 +13,23 @@ namespace :icons do
       
       # Create a draw object for the emoji
       draw = Magick::Draw.new
-      draw.font = 'Arial'
+      
+      # Use a system font that supports emoji
+      draw.font = if Gem.win_platform?
+        'Segoe UI Emoji'
+      else
+        'Apple Color Emoji'
+      end
+      
       draw.pointsize = size * 0.6
       draw.gravity = Magick::CenterGravity
       draw.fill = 'white'
       
       # Add the handshake emoji
       draw.annotate(image, 0, 0, 0, 0, '🤝')
+      
+      # Add a white border for better visibility
+      image = image.border(1, 1, 'white')
       
       # Save the image
       output_path = Rails.root.join('public', 'icons', "icon-#{size}x#{size}.png")
