@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
     cookies['XSRF-TOKEN'] = {
       value: form_authenticity_token,
       secure: Rails.env.production?,
-      httponly: true,
+      httponly: false,
       same_site: :lax
     }
   end

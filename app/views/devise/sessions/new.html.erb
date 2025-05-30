@@ -9,9 +9,8 @@
         <%= link_to 'create a new account', new_user_registration_path, class: 'font-medium text-blue-600 hover:text-blue-500' %>
       </p>
     </div>
-    <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: 'mt-8 space-y-6', data: { turbo: true, controller: 'form' } }) do |f| %>
+    <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: 'mt-8 space-y-6', data: { turbo: false } }) do |f| %>
       <%= render 'devise/shared/error_messages', resource: resource %>
-      <%= csrf_meta_tags %>
 
       <div class="space-y-4">
         <div>
